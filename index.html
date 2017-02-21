@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <style>
+      /* http://meyerweb.com/eric/tools/css/reset/
+         v2.0 | 20110126
+         License: none (public domain)
+      */
+
+      html, body, div, span, applet, object, iframe,
+      h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+      a, abbr, acronym, address, big, cite, code,
+      del, dfn, em, img, ins, kbd, q, s, samp,
+      small, strike, strong, sub, sup, tt, var,
+      b, u, i, center,
+      dl, dt, dd, ol, ul, li,
+      fieldset, form, label, legend,
+      table, caption, tbody, tfoot, thead, tr, th, td,
+      article, aside, canvas, details, embed,
+      figure, figcaption, footer, header, hgroup,
+      menu, nav, output, ruby, section, summary,
+      time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+      }
+      /* HTML5 display-role reset for older browsers */
+      article, aside, details, figcaption, figure,
+      footer, header, hgroup, menu, nav, section {
+        display: block;
+      }
+      body {
+        line-height: 1;
+      }
+      ol, ul {
+        list-style: none;
+      }
+      blockquote, q {
+        quotes: none;
+      }
+      blockquote:before, blockquote:after,
+      q:before, q:after {
+        content: '';
+        content: none;
+      }
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      html {
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #313A46;
+        font-size: 16px;
+      }
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+      .main {
+        display: flex;
+      }
+      .left {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 50vw;
+      }
+      .left form {
+        background-color: #FFFFFF;
+        padding: 3vw;
+        border-radius: 3px;
+        width: 70%;
+        margin: 0 auto;
+      }
+      .left form input, .left form textarea {
+        width: 100%;
+        border: 1px solid #ECEBEB;
+        padding: 0.5rem;
+        border-radius: 3px;
+        font-size: 1rem;
+        font-family: "Helvetica Neue";
+        color: #878E94;
+      }
+      .left form textarea {
+        resize: none;
+      }
+      .left form input {
+        display: block;
+        height: 2.5rem;
+      }
+      .left form *:not(:last-child) {
+        margin-bottom: 3vh;
+      }
+      .left form button {
+        background-color: #FF005B;
+        width: 100%;
+        height: 3rem;
+        border: none;
+        border-radius: 3px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .middle {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 25vw;
+      }
+      .middle img {
+        display: block;
+        margin: 0 auto;
+        animation: spin 5s linear infinite;
+      }
+      @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+      .right {
+        width: 25vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .right #gauge-container {
+        width: 50px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .right #gauge-container img {
+        border-radius: 3px;
+        width: 100%;
+        height: 100%;
+      }
+      .right #gauge-container #gauge-overlay {
+        width: 100%;
+        height: 00%;
+        background-color: white;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0.5;
+      }
+    </style>
+    <div class="main">
+      <div class="section left">
+        <form id="left-form">
+          <input type="text" spellcheck="false" />
+          <input type="text" spellcheck="false" />
+          <textarea rows="13" spellcheck="false"></textarea>
+          <button id="form-submit" type="button">SUBMIT</button>
+        </form>
+      </div>
+      <div class="section middle">
+        <img src="clock.png">
+      </div>
+      <div class="section right">
+        <div id="gauge-container">
+          <img src="danger_gauge.png" />
+          <div id="gauge-overlay"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      var shortVal       = 'Lorem ipsum dolor sit amet';
+      var longVal        = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+      var form           = document.getElementById('left-form');
+      var formSubmit     = document.getElementById('form-submit');
+      var gaugeContainer = document.getElementById('gauge-container');
+
+      var formScript = function() {
+
+        var fillInForm = function() {
+          formSubmit.style.backgroundColor = '#FF005B';
+          formSubmit.style.opacity = '1';
+          setTimeout(function() {
+            formSubmit.style.backgroundColor = '#F42156';
+            formSubmit.style.opacity = '0.5';
+          }, 4500);
+
+          for(var i = 0; i < form.children.length; ++i) {
+            var elem      = form.children[i];
+            var timeStart = i * 300;
+
+            if (elem.tagName == 'INPUT')    fillInElement(elem, shortVal, timeStart);
+            if (elem.tagName == 'TEXTAREA') fillInElement(elem, longVal, timeStart);
+          }
+
+          function fillInElement(elem, content) {
+            var chars = content.split('');
+
+            elem.value = '';
+
+            for (var i = 0; i < chars.length; ++i) {
+              setTimeout(function(elem, char) {
+                elem.value += char;
+              }, timeStart + i * 8, elem, chars[i]);
+            }
+          }
+        }
+
+        fillInForm();
+        setInterval(fillInForm, 5000);
+      }
+
+      var gaugeScript = function() {
+        var overlay = document.getElementById('gauge-overlay');
+
+        gaugeContainer.style.height = form.offsetHeight + 'px';
+        overlay.style.height = '0%';
+
+        setInterval(function() {
+          switch (overlay.style.height) {
+            case '0%':
+              overlay.style.height = '20%';
+              break;
+            case '20%':
+              overlay.style.height = '40%';
+              break;
+            case '40%':
+              overlay.style.height = '60%';
+              break;
+            case '60%':
+              overlay.style.height = '80%';
+              break;
+            case '80%':
+              overlay.style.height = '0%';
+              break;
+            default:
+              break;
+          }
+        }, 1000);
+      }
+
+      formScript();
+      gaugeScript();
+    })();
+    </script>
+  </body>
+</html>
