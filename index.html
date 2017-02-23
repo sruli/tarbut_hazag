@@ -62,6 +62,15 @@
       *, *:before, *:after {
         box-sizing: inherit;
       }
+      button {
+        width: 100%;
+        height: 3rem;
+        border: none;
+        border-radius: 3px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+      }
       .main {
         display: flex;
       }
@@ -100,13 +109,6 @@
       }
       .left form button {
         background-color: #FF005B;
-        width: 100%;
-        height: 3rem;
-        border: none;
-        border-radius: 3px;
-        color: white;
-        font-size: 1rem;
-        cursor: pointer;
       }
       .middle {
         height: 100vh;
@@ -115,12 +117,29 @@
         justify-content: center;
         width: 25vw;
       }
+      .middle-container {
+        height: 525px;
+        position: relative;
+        padding: 3vw;
+      }
       .middle img {
         display: block;
-        margin: 0 auto;
+        margin: 80px auto;
         animation: spin 5s linear infinite;
       }
+      .middle button {
+        background-color: #DD1C21;
+        position: absolute;
+        bottom: 40px;
+        left: 0;
+      }
       @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+      .middle img.paused {
+        -webkit-animation-play-state:paused;
+        -moz-animation-play-state:paused;
+        -o-animation-play-state:paused;
+        animation-play-state:paused;
+      }
       .right {
         width: 25vw;
         height: 100vh;
@@ -133,20 +152,26 @@
         margin: 0 auto;
         position: relative;
       }
-      .right #gauge-container img {
+      .right #gauge-container #gauge {
         border-radius: 3px;
         width: 100%;
         height: 100%;
       }
+      .right #gauge-container #boom {
+        position: absolute;
+        top: 30%;
+        left: -125%;
+        z-index: 10;
+      }
       .right #gauge-container #gauge-overlay {
         width: 100%;
         height: 00%;
-        background-color: white;
+        background-color: black;
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        opacity: 0.5;
+        opacity: 0.4;
       }
     </style>
     <div class="main">
@@ -159,11 +184,15 @@
         </form>
       </div>
       <div class="section middle">
-        <img src="clock.png">
+        <div class="middle-container">
+          <img id="clock" src="clock.png">
+          <button id="crash-button">CRASH</button>
+        </div>
       </div>
       <div class="section right">
         <div id="gauge-container">
-          <img src="danger_gauge.png" />
+          <img id="boom" src="boom.png" style="display: none;" />
+          <img id="gauge" src="danger_gauge.png" />
           <div id="gauge-overlay"></div>
         </div>
       </div>
@@ -176,13 +205,17 @@
       var form           = document.getElementById('left-form');
       var formSubmit     = document.getElementById('form-submit');
       var gaugeContainer = document.getElementById('gauge-container');
+      var fillForm       = true;
 
       var formScript = function() {
 
         var fillInForm = function() {
+          if (!fillForm) return;
+
           formSubmit.style.backgroundColor = '#FF005B';
           formSubmit.style.opacity = '1';
           setTimeout(function() {
+            if (!fillForm) return;
             formSubmit.style.backgroundColor = '#F42156';
             formSubmit.style.opacity = '0.5';
           }, 4500);
@@ -202,7 +235,7 @@
 
             for (var i = 0; i < chars.length; ++i) {
               setTimeout(function(elem, char) {
-                elem.value += char;
+                if (fillForm) elem.value += char;
               }, timeStart + i * 8, elem, chars[i]);
             }
           }
@@ -233,7 +266,15 @@
               overlay.style.height = '80%';
               break;
             case '80%':
-              overlay.style.height = '0%';
+              if (fillForm) {
+                overlay.style.height = '0%';
+              } else {
+                overlay.style.height = '100%';
+              }
+              break;
+            case '100%':
+              var boom = document.getElementById('boom');
+              boom.style.display = 'block';
               break;
             default:
               break;
@@ -243,6 +284,14 @@
 
       formScript();
       gaugeScript();
+
+      document.addEventListener('click', function(e) {
+        if (e.target && e.target.id == 'crash-button') {
+          var clock = document.getElementById('clock');
+          clock.className = 'paused';
+          fillForm = false;
+        }
+      })
     })();
     </script>
   </body>
